@@ -1,6 +1,6 @@
 #uptime API
 # https://uptimerobot.com/api/ ← documentation.
-#get monitors
+
 import json
 import http.client
 import re
@@ -17,7 +17,8 @@ headers = {
     'cache-control': "no-cache"
     }
 
-def getinfo():
+#Set offset to a range to get ALL. API has a limit of 50 results, this will get up to 400 and return it in a list.
+def getinfo(): 
     all_ids = []
     offset_var_add = 0
     for update_offset in range(0,350,50):
@@ -35,6 +36,7 @@ def getinfo():
             
 get_monitors = getinfo()
 
+#Edit the monitors one by one. In this case it is only changing the timeout to 60.
 def editdomain(get_monitors):
     for monitorid in get_monitors:
         edit = key + "&format=json&id=%s&timeout=60" %(monitorid)
