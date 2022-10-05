@@ -282,7 +282,7 @@ def accountDetails(apikey, headers):
     data = res.read().decode('utf-8')
     catchRateError(data)
     print('Getting account details as JSON file: ')         
-    print(data.decode("utf-8"))
+    print(data)
 
 ## - Retrieves contacts displaying name and ID.
 
