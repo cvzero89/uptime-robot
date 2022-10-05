@@ -43,6 +43,8 @@ Type?
 (Only HTTP(s) Supported at the time): 1
 Added test successfully!
 ```
+To add in batch the importcsv file needs to be filled. Not all columns are required, "Friendly Name", "URL/IP", "Alert Contacts" are the only ones taken into account.
+
 
 Searching monitors based on strings on the friendlyName or URL:
 
