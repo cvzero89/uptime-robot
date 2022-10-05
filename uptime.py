@@ -88,7 +88,7 @@ class Monitor:
             edit = f'api_key={apikey}&format=json&id={monitor.monitorId}&{option_to_edit}'
             conn.request("POST", "/v2/editMonitor", edit, headers)
             res = conn.getresponse()
-            data = res.read()
+            data = res.read().decode('utf-8')
             catchRateError(data)
             try:
                 mydata = json.loads(data)
@@ -207,7 +207,7 @@ class Monitor:
         delete = f'api_key={apikey}&format=json&id={monitor.monitorId}'                 
         conn.request("POST", "/v2/deleteMonitor", delete, headers)            
         res = conn.getresponse()
-        data = res.read()
+        data = res.read().decode('utf-8')
         catchRateError(data)
         mydata = json.loads(data)
         if mydata['stat'] == 'ok':
@@ -279,7 +279,7 @@ def accountDetails(apikey, headers):
     get_account_details = f'api_key={apikey}&format=json'
     conn.request("POST", "/v2/getAccountDetails", get_account_details, headers)
     res = conn.getresponse()
-    data = res.read()
+    data = res.read().decode('utf-8')
     catchRateError(data)
     print('Getting account details as JSON file: ')         
     print(data.decode("utf-8"))
@@ -290,7 +290,7 @@ def alertContacts(apikey, headers):
     get_alert_contacts = f'api_key={apikey}&format=json'
     conn.request("POST", "/v2/getAlertContacts", get_alert_contacts, headers)
     res = conn.getresponse()
-    data = res.read()
+    data = res.read().decode('utf-8')
     catchRateError(data)         
     mydata = json.loads(data)
     if mydata['stat'] == 'ok':
