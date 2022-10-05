@@ -156,6 +156,8 @@ class Monitor:
         try:
             offset = int(input('How many records do you want to display?: '))
             offset_range = offset - 50
+            if offset_range <= 50:
+                offset_range = 50
         except ValueError:
             offset_range = 100
             print('Invalid input, max. 150 records will be displayed.')
