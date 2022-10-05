@@ -1,4 +1,4 @@
 Type,Friendly Name,URL/IP,Interval,Alert Contact,Keyword Type,Keyword Value,Port
-1,makussa.com,makussa.com,5,1861777,,,
-1,anothersite.com,anothersite.com,5,1861777,,,
-1,Dum-e.com,Dum-e.com,5,1861777,,,
+1,example.com,example.com,5,1861777,,,
+1,anothersite.com,anothersite.com,5,18614777,,,
+1,example2.com,This is a friendlyname,5,18617477,,,
