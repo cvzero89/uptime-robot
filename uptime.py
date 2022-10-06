@@ -228,7 +228,7 @@ class Monitor:
         if mydata['stat'] == 'ok':
             print('Received paused list.')
             loaded_monitors = mydata['monitors']
-            print(f'Number of monitors down: {len(loaded_monitors)}')
+            print(f'Number of monitors paused: {len(loaded_monitors)}')
             for ids in range(len(loaded_monitors)):
                 to_add = loaded_monitors[ids]['url'], loaded_monitors[ids]['friendly_name'], loaded_monitors[ids]['id']
                 monitor_info.append(to_add)
