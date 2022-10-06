@@ -294,9 +294,9 @@ def alertContacts(apikey, headers):
     catchRateError(data)         
     mydata = json.loads(data)
     if mydata['stat'] == 'ok':
-        print('Retriving contacts:')
-        for ids in mydata['alert_contacts']:
-            print(f'ID: {mydata["alert_contacts"][0]["id"]}, Name: {mydata["alert_contacts"][0]["friendly_name"]}')
+        print(f'Retriving contacts: {len(mydata["alert_contacts"])}')
+        for ids in range(len(mydata['alert_contacts'])):
+            print(f'ID: {mydata["alert_contacts"][ids]["id"]}, Name: {mydata["alert_contacts"][ids]["friendly_name"]}, Email: {mydata["alert_contacts"][ids]["value"]}')
     else:
         print('Could not list alertContacts')
 
