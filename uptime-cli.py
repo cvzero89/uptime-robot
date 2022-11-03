@@ -61,9 +61,10 @@ if args.action == 'edit_monitor':
 		exit()
 
 
-alert_contacts = loadcontacts()
+
 
 if args.action == 'add_single':
+	alert_contacts = loadcontacts()
 	question = int(input("How many domains will you add?: "))
 
 	for number in range(question):
@@ -76,6 +77,7 @@ if args.action == 'add_single':
 		monitor.add_single(apikey, headers, alert_contacts)
 
 if args.action == 'add_in_batch':
+	alert_contacts = loadcontacts()
 	print('File assumed as uptimerobot.csv on the script directory.')
 	add_in_batch(headers, apikey)
 
