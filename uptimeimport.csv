@@ -1,4 +1,6 @@
-Type,Friendly Name,URL/IP,Interval,Alert Contact,Keyword Type,Keyword Value,Port
-1,example.com,example.com,5,1861777,,,
-1,anothersite.com,anothersite.com,5,18614777,,,
-1,example2.com,This is a friendlyname,5,18617477,,,
+Type,Friendly Name,URL/IP,Interval,Alert Contact,Keyword Type,Keyword Case Type,Keyword Value,Port,Custom port
+1,example.com,example.com,5,3565324,,,,,
+2,anothersite.com,anothersite.com,5,3565324,1,0,test,,
+3,example2.com,example2.com,5,3565324,,,,,
+4,domain.com,domain.com,5,3565324,,,,2,
+5,domain2.com,domain2.com,5,3565324,,,,,
