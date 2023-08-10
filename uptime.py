@@ -4,6 +4,7 @@
 
 import json
 import http.client
+import time
 import re
 import os
 from dotenv import load_dotenv
@@ -183,7 +184,6 @@ def load_json(data):
 
 def add_in_batch(headers, apikey):
     import csv
-    import time
     current_item = 1
     with open('uptimeimport.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=',', quotechar='|')
