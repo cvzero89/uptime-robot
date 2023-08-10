@@ -513,7 +513,7 @@ def main():
                 monitor = Monitor(domain, friendly_name, None, None, monitor_type, None, port_dict, alert_contacts)
             else:
                 monitor = Monitor(domain, friendly_name, None, None, monitor_type, None, None, alert_contacts)
-            monitor.addMonitor(apikey, headers, alert_contacts)
+            monitor.addMonitor(apikey, headers)
 
     if args.action == 'add_in_batch':
         print('File assumed as uptimerobot.csv on the script directory.')
