@@ -290,9 +290,13 @@ def getinfo(headers, apikey, logs):
 
 ## - Retrieves URL, friendlyName and ID for paused monitors.
 
-def getPaused(apikey, headers):
+def getPaused(apikey, headers, logs):
+    if logs == True:
+        logs_bool = '1'
+    else:
+        logs_bool = '0'
     monitor_info = []
-    paused = f'api_key={apikey}&format=json&statuses=0'
+    paused = f'api_key={apikey}&format=json&statuses=0&logs={logs_bool}'
     conn.request("POST", "/v2/getMonitors/", paused, headers)
     res = conn.getresponse()
     data = res.read().decode('utf-8')
@@ -304,8 +308,12 @@ def getPaused(apikey, headers):
 ## - Retrieves URL, friendlyName and ID for down monitors.
 
 def getDown(apikey, headers):
+    if logs == True:
+        logs_bool = '1'
+    else:
+        logs_bool = '0'
     monitor_info = []
-    down = f'api_key={apikey}&format=json&statuses=9'
+    down = f'api_key={apikey}&format=json&statuses=9&logs={logs_bool}'
     conn.request("POST", "/v2/getMonitors/", down, headers)
     res = conn.getresponse()
     data = res.read().decode('utf-8')
@@ -326,7 +334,7 @@ def printInfo(monitor_info):
 
 ## - Used to find rate limit errors. Common when using the free plan and the option to search all monitors.
 
-pattern = re.compile(r'(Rate limit|Warning|Error)', re.IGNORECASE)
+pattern = re.compile(r'(Rate limit|Warning)', re.IGNORECASE)
 
 def catchRateError(data):
     try:
@@ -411,11 +419,11 @@ def main():
         printInfo(monitor_info)
 
     if args.action == 'get_down_monitors':
-        monitor_info = getDown(apikey, headers)
+        monitor_info = getDown(apikey, headers, logs)
         printInfo(monitor_info)
 
     if args.action == 'get_paused_monitors':
-        monitor_info = getPaused(apikey, headers)
+        monitor_info = getPaused(apikey, headers, logs)
         printInfo(monitor_info)
 
     if args.action == 'delete_monitor':
