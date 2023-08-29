@@ -308,7 +308,7 @@ def getPaused(apikey, headers, logs):
 
 ## - Retrieves URL, friendlyName and ID for down monitors.
 
-def getDown(apikey, headers):
+def getDown(apikey, headers, logs):
     if logs == True:
         logs_bool = '1'
     else:
