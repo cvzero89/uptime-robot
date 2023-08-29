@@ -266,26 +266,27 @@ def searchMonitor(domain, apikey, headers, logs):
 
 def getinfo(headers, apikey, logs): 
     offset_var_add = 0
+    monitor_info = []
     try:
         offset = int(input('How many records do you want to display? (Min: 50): '))
-        offset_range = offset - 50
-        if offset_range <= 50:
-            offset_range = 50
+        if offset <= 50:
+            offset = 50
     except ValueError:
-        offset_range = 100
+        offset = 100
         print('Invalid input, max. 150 records will be displayed.')
     if logs == True:
         logs_bool = '1'
     else:
         logs_bool = '0'
-    for update_offset in range(0, offset_range,50):
+    for update_offset in range(0, offset,50):
         offset_var_full = f'offset={str(update_offset)}'
         getinfomonitor = f'api_key={apikey}&format=json&logs={logs_bool}&{offset_var_full}'
         conn.request("POST", "/v2/getMonitors", getinfomonitor, headers)
         res = conn.getresponse()
         data = res.read().decode('utf-8')
         catchRateError(data)
-        number_of_monitors, monitor_info = load_json(data)        
+        number_of_monitors, monitor_info_temp = load_json(data)
+        monitor_info = monitor_info + monitor_info_temp        
     return monitor_info
 
 ## - Retrieves URL, friendlyName and ID for paused monitors.
