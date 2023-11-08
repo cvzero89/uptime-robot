@@ -145,6 +145,14 @@ class Monitor:
             incident_id = log['id']
             time = datetime.fromtimestamp(log['datetime'])
             duration = log['duration'] / 60
+            if duration <= 600:
+                duration_display = f'{duration:.1f} minutes'
+            elif 600 < duration < 1439:
+                hourly = duration / 60
+                duration_display = f'{hourly:.1f} hours'
+            else:
+                daily = duration / 1440
+                duration_display = f'{daily:.0f} days'
             reason = log['reason']['detail']
             if log['type'] == 1:
                 log_type = 'DOWN'
@@ -154,7 +162,7 @@ class Monitor:
                 log_type = 'PAUSED'
             else:
                 log_type = 'STARTED'
-            print(f'Incident id: {incident_id}, type {log_type} at {time} for {round(duration, 2)} minutes. Reason: {reason}')
+            print(f'Incident id: {incident_id}, type {log_type} at {time} for {duration_display}. Reason: {reason}')
         print('\n')
 
 
@@ -292,17 +300,29 @@ def getinfo(headers, apikey, logs):
 ## - Retrieves URL, friendlyName and ID for paused monitors.
 
 def getPaused(apikey, headers, logs):
+    try:
+        offset = int(input('How many records do you want to display? (Min: 50): '))
+        if offset <= 50:
+            offset = 50
+    except ValueError:
+        offset = 100
+        print('Invalid input, max. 150 records will be displayed.')
     if logs == True:
         logs_bool = '1'
     else:
         logs_bool = '0'
     monitor_info = []
-    paused = f'api_key={apikey}&format=json&statuses=0&logs={logs_bool}'
-    conn.request("POST", "/v2/getMonitors/", paused, headers)
-    res = conn.getresponse()
-    data = res.read().decode('utf-8')
-    catchRateError(data)
-    number_of_monitors, monitor_info = load_json(data)
+    number_of_monitors = 0
+    for update_offset in range(0, offset,50):
+        offset_var_full = f'offset={str(update_offset)}'
+        paused = f'api_key={apikey}&format=json&statuses=0&logs={logs_bool}&{offset_var_full}'
+        conn.request("POST", "/v2/getMonitors/", paused, headers)
+        res = conn.getresponse()
+        data = res.read().decode('utf-8')
+        catchRateError(data)
+        number_of_monitors_temp, monitor_info_temp = load_json(data)
+        monitor_info = monitor_info + monitor_info_temp
+        number_of_monitors = number_of_monitors + number_of_monitors_temp
     print(f'Number of monitors paused: {number_of_monitors}')
     return monitor_info
 
@@ -313,13 +333,25 @@ def getDown(apikey, headers, logs):
         logs_bool = '1'
     else:
         logs_bool = '0'
+    try:
+        offset = int(input('How many records do you want to display? (Min: 50): '))
+        if offset <= 50:
+            offset = 50
+    except ValueError:
+        offset = 100
+        print('Invalid input, max. 150 records will be displayed.')
     monitor_info = []
-    down = f'api_key={apikey}&format=json&statuses=9&logs={logs_bool}'
-    conn.request("POST", "/v2/getMonitors/", down, headers)
-    res = conn.getresponse()
-    data = res.read().decode('utf-8')
-    catchRateError(data)
-    number_of_monitors, monitor_info = load_json(data)
+    number_of_monitors = 0
+    for update_offset in range(0, offset,50):
+        offset_var_full = f'offset={str(update_offset)}'
+        down = f'api_key={apikey}&format=json&statuses=9&logs={logs_bool}&{offset_var_full}'
+        conn.request("POST", "/v2/getMonitors/", down, headers)
+        res = conn.getresponse()
+        data = res.read().decode('utf-8')
+        catchRateError(data)
+        number_of_monitors_temp, monitor_info_temp = load_json(data)
+        monitor_info = monitor_info + monitor_info_temp
+        number_of_monitors = number_of_monitors + number_of_monitors_temp
     print(f'Number of monitors down: {number_of_monitors}')
     return monitor_info
 
@@ -342,8 +374,7 @@ def catchRateError(data):
         if pattern.search(data):
             print(f'Error while executing API: \n{data}\nExiting.')
             exit()
-    except BaseException as e:
-        print(e)
+    except:
         pass
 
 ## - Prints all account details as JSON.
