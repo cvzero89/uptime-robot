@@ -61,7 +61,7 @@ headers = {
     }
 
 class Monitor:
-    def __init__(self, domain, friendlyName='blank', monitorId=None, logs=None, type_='1', keyword=None, port=None, alert_contacts='blank', monitorInterval='300', monitorTimeout='60', monitorSSL='1'):
+    def __init__(self, domain, friendlyName='blank', monitorId=None, logs=None, status=None, type_='1', keyword=None, port=None, alert_contacts='blank', monitorInterval='300', monitorTimeout='60', monitorSSL='1'):
         self.type_ = type_
         self.domain = domain.replace('http://', '').replace('https://', '')
         self.friendlyName = friendlyName.replace(' ','')
@@ -73,6 +73,7 @@ class Monitor:
         self.logs = logs
         self.keyword = keyword
         self.port = port
+        self.status = status
 
 
 ## - Edit domains. Needs to be feed a list in monitor_info and option_to_edit to be valid based on https://uptimerobot.com/api/.
@@ -179,9 +180,9 @@ def load_json(data):
         number_of_monitors = len(loaded_monitors)
         for ids in range(number_of_monitors):
             try:
-                to_add = loaded_monitors[ids]['url'], loaded_monitors[ids]['friendly_name'], loaded_monitors[ids]['id'], loaded_monitors[ids]['logs']
+                to_add = loaded_monitors[ids]['url'], loaded_monitors[ids]['friendly_name'], loaded_monitors[ids]['id'], loaded_monitors[ids]['logs'], loaded_monitors[ids]['status']
             except KeyError:
-                to_add = loaded_monitors[ids]['url'], loaded_monitors[ids]['friendly_name'], loaded_monitors[ids]['id']
+                to_add = loaded_monitors[ids]['url'], loaded_monitors[ids]['friendly_name'], loaded_monitors[ids]['id'], None, loaded_monitors[ids]['status']
             monitor_info.append(to_add)
     else:
         print(f'Failed to retrieve monitor list \nError:')
@@ -226,9 +227,9 @@ def add_in_batch(headers, apikey):
                 elif row['Port'] == '99':
                     port_dict['port_sub_type'] = '99'
                     port_dict['port_number'] = row['Custom port']
-                monitor = Monitor(row['URL/IP'], row['Friendly Name'], None, None, row['Type'], None, port_dict, row['Alert Contact'])
+                monitor = Monitor(row['URL/IP'], row['Friendly Name'], None, None, None, row['Type'], None, port_dict, row['Alert Contact'])
             else:
-                monitor = Monitor(row['URL/IP'], row['Friendly Name'], None, None, row['Type'], None, None, row['Alert Contact'])
+                monitor = Monitor(row['URL/IP'], row['Friendly Name'], None, None, None, row['Type'], None, None, row['Alert Contact'])
             monitor.addMonitor(apikey, headers)
             current_item += 1
             sleepy()
@@ -247,27 +248,8 @@ def searchMonitor(domain, apikey, headers, logs):
     res = conn.getresponse()
     data = res.read().decode('utf-8')
     catchRateError(data)
-    try:
-        mydata = json.loads(data)
-    except ValueError:
-        print('Could not load JSON data.')
-        exit()
-    if mydata['stat'] == 'ok':
-        loaded_monitors = mydata['monitors']
-        for ids in range(len(loaded_monitors)):
-            try:
-                to_add = loaded_monitors[ids]['url'], loaded_monitors[ids]['friendly_name'], loaded_monitors[ids]['id'], loaded_monitors[ids]['logs']
-            except KeyError:
-                to_add = loaded_monitors[ids]['url'], loaded_monitors[ids]['friendly_name'], loaded_monitors[ids]['id']
-            monitor_info.append(to_add)
-    else:
-        print(f'Failed to retrieve monitor list \nError:')
-        print(mydata)  
-    if not monitor_info:
-        print('Monitor info was empty.')
-        exit()
-    else:
-        return monitor_info
+    number_of_monitors, monitor_info = load_json(data)
+    return monitor_info
 
 
 ## - Set offset to a range to get ALL. API has a limit of 50 results, this will get a default of 150 and return it in a list.
@@ -361,7 +343,17 @@ def printInfo(monitor_info):
     print(f'Displaying {len(monitor_info)} records.')
     for info in monitor_info:
         monitor = Monitor(*info)
-        print(f'\nDomain name: {monitor.domain}\nFriendly Name: {monitor.friendlyName}\nID: {monitor.monitorId}')
+        if monitor.status == 2:
+            status = 'UP'
+        elif monitor.status == 0:
+            status = 'PAUSED'
+        elif monitor.status == 1:
+            status = 'Not checked'
+        elif monitor.status == 9:
+            status = 'DOWN'
+        else:
+            status = 'Seems down'
+        print(f'\nDomain name: {monitor.domain}\nFriendly Name: {monitor.friendlyName}\nID: {monitor.monitorId}\nStatus: {status}')
         if monitor.logs:
             monitor.logParser()
 
@@ -525,7 +517,7 @@ def main():
                 keyword_dict['keyword_type'] = input("1 - Exists or 2 - Does not exist: ")
                 keyword_dict['keyword_case_type'] = input("0 - Case sensitive or 1 - Case insensitive: ")
                 keyword_dict['keyword_value'] = input("Enter your keyword: ")
-                monitor = Monitor(domain, friendly_name, None, None, monitor_type, keyword_dict, None, alert_contacts)
+                monitor = Monitor(domain, friendly_name, None, None, None, monitor_type, keyword_dict, None, alert_contacts)
             elif monitor_type == '4':
                 port_dict = {}
                 port_dict['port_sub_type'] = input("""Port type:
@@ -550,9 +542,9 @@ def main():
                     port_dict['port_number'] = '143'
                 elif port_dict['port_sub_type'] == '99':
                     port_dict['port_number'] = input('Enter custom port: ')
-                monitor = Monitor(domain, friendly_name, None, None, monitor_type, None, port_dict, alert_contacts)
+                monitor = Monitor(domain, friendly_name, None, None, None, monitor_type, None, port_dict, alert_contacts)
             else:
-                monitor = Monitor(domain, friendly_name, None, None, monitor_type, None, None, alert_contacts)
+                monitor = Monitor(domain, friendly_name, None, None, None, monitor_type, None, None, alert_contacts)
             monitor.addMonitor(apikey, headers)
 
     if args.action == 'add_in_batch':
